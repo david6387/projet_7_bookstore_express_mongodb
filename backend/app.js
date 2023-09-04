@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const app = express();
+const Book = require("./models/Book");
 
 mongoose
   .connect(
@@ -14,7 +14,15 @@ mongoose
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
+const app = express();
+
 // const userRoutes = require("./routes/user");
+
+app.post("/api/books", (req, res, next) => {
+  const book = new Book({
+    ...req.body,
+  });
+});
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
