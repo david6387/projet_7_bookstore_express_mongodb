@@ -1,4 +1,4 @@
-const Thing = require("../models/Book");
+const Book = require("../models/Book");
 
 exports.createBook = (req, res, next) => {
   delete req.body._id;
@@ -25,7 +25,7 @@ exports.deleteBook = (req, res, next) => {
 
 exports.getOneBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
-    .then((book) => res.status(200).json(thing))
+    .then((book) => res.status(200).json(book))
     .catch((error) => res.status(400).json({ error }));
 };
 
