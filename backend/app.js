@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const path = require("path");
 
 const userRoutes = require("./routes/user");
 const booksRoutes = require("./routes/books");
@@ -35,5 +36,6 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/books", booksRoutes);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;
