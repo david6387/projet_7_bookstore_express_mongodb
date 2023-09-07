@@ -39,9 +39,13 @@ exports.login = (req, res, next) => {
             } else {
               res.status(200).json({
                 userId: user._id,
-                token: jwt.sign({ userId: user_id }, "RAMDOM_TOKEN_SECRET", {
-                  expiresIn: "24h",
-                }),
+                token: jwt.sign(
+                  { userId: user._id },
+                  "a8a28919-8c90-45e4-a3c5-d566c202338c",
+                  {
+                    expiresIn: "24h",
+                  }
+                ),
               });
             }
           })
