@@ -43,7 +43,7 @@ exports.modifyBook = (req, res, next) => {
     })
     .catch((error) => res.status(400).json({ error }));
 };
-
+// route de suppression
 exports.deleteBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => {
