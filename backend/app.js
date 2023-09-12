@@ -2,13 +2,17 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
-
 const userRoutes = require("./routes/user");
 const booksRoutes = require("./routes/books");
 
+require("dotenv").config();
+let mongoUser = process.env.DB_ID;
+let mongoPwd = process.env.DB_PWD;
+let mongoCluster = process.env.DB_CLUSTER;
+
 mongoose
   .connect(
-    "mongodb+srv://david:FYZUTb3FYJLGkrFh@clusterbookstore.eqgpj7q.mongodb.net/?retryWrites=true&w=majority",
+    `mongodb+srv://${mongoUser}:${mongoPwd}@${mongoCluster}.mongodb.net/?retryWrites=true&w=majority`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,

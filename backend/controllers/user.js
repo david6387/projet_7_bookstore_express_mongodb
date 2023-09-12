@@ -1,7 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 const User = require("../models/User");
+
+require("dotenv").config();
 
 exports.signup = (req, res, next) => {
   // execution de l'inscription
@@ -21,7 +22,7 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  //
+  let token = process.env.TOKEN;
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (user === null) {
@@ -39,13 +40,9 @@ exports.login = (req, res, next) => {
             } else {
               res.status(200).json({
                 userId: user._id,
-                token: jwt.sign(
-                  { userId: user._id },
-                  "a8a28919-8c90-45e4-a3c5-d566c202338c",
-                  {
-                    expiresIn: "24h",
-                  }
-                ),
+                token: jwt.sign({ userId: user._id }, token, {
+                  expiresIn: "24h",
+                }),
               });
             }
           })
