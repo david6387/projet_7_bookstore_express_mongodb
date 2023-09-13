@@ -4,6 +4,11 @@ const mongoose = require("mongoose");
 const path = require("path");
 const userRoutes = require("./routes/user");
 const booksRoutes = require("./routes/books");
+const sharp = require("sharp");
+
+sharp("./images/soft-skills.jpg1694534563945.jpg")
+  .resize(200, 200)
+  .toFile("./images/sml.soft.jpeg");
 
 require("dotenv").config();
 let mongoUser = process.env.DB_ID;
