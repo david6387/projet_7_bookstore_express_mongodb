@@ -18,6 +18,45 @@ exports.createBook = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+exports.getBestRatedBooks = (req, res, next) => {
+  Book.find()
+    .then((books) => {
+      books.sort((a, b) => b.averageRating - a.averageRating);
+      const bestRatedBooks = books.slice(0, 3);
+      res.status(200).json(bestRatedBooks);
+    })
+    .catch((error) => res.status(404).json({ error }));
+};
+
+exports.ratingBook = (req, res, next) => {
+  let Rating = {
+    userId: req.auth.userId,
+    grade: req.body.rating,
+  };
+
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      userRating = book.ratings.find((u) => u.userId === req.auth.userId);
+      if (userRating) {
+        res.status(400).json({ message: "Vous avez déjà donné une note" });
+      } else {
+        book.ratings.push(Rating);
+
+        const sumRatings = book.ratings.reduce(
+          (sum, rating) => sum + rating.grade,
+          0
+        );
+        book.averageRating = (sumRatings / book.ratings.length).toFixed(1);
+
+        book
+          .save()
+          .then((book) => res.status(200).json(book))
+          .catch((error) => res.status(401).json({ error }));
+      }
+    })
+    .catch((error) => res.status(404).json({ error }));
+};
+
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
     ? {
