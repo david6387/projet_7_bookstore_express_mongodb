@@ -4,11 +4,17 @@ const mongoose = require("mongoose");
 const path = require("path");
 const userRoutes = require("./routes/user");
 const booksRoutes = require("./routes/books");
-const sharp = require("sharp");
+const hpp = require("hpp");
+const expressRateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 
-sharp("./images/soft-skills.jpg1694534563945.jpg")
-  .resize(200, 200)
-  .toFile("./images/sml.soft.jpeg");
+const limiter = expressRateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false,
+});
 
 require("dotenv").config();
 let mongoUser = process.env.DB_ID;
@@ -28,6 +34,18 @@ mongoose
 
 const app = express();
 
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "default-src": ["'self'"],
+      "script-src": ["'self'"],
+      "style-src": ["'self'"],
+      "img-src": ["*"], // Autorise les images de toutes les sources
+      "font-src": ["'self'"],
+    },
+  })
+);
+
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -38,10 +56,15 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
+  res.setHeader("Cross-Origin-Resource-Policy", "same-site");
   next();
 });
 
 app.use(bodyParser.json());
+
+app.use(limiter);
+app.use(mongoSanitize());
+app.use(hpp());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/books", booksRoutes);

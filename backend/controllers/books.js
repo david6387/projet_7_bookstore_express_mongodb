@@ -5,12 +5,22 @@ exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
   delete bookObject._id;
   delete bookObject._userId;
+  console.log(`${req.protocol}://${req.get(
+    "host"
+  )}/images/${req.file.filename.replace(
+    /\.jpeg|\.jpg|\.png/g,
+    "_"
+  )}thumbnail.webp
+  `);
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
+    imageUrl: `${req.protocol}://${req.get(
+      "host"
+    )}/images/${req.file.filename.replace(
+      /\.jpeg|\.jpg|\.png/g,
+      "_"
+    )}thumbnail.webp`,
   });
   book
     .save()
@@ -63,9 +73,12 @@ exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
     ? {
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
+        imageUrl: `${req.protocol}://${req.get(
+          "host"
+        )}/images/${req.file.filename.replace(
+          /\.jpeg|\.jpg|\.png/g,
+          "_"
+        )}thumbnail.webp`,
       }
     : { ...req.body };
   delete bookObject._userId;
@@ -74,6 +87,13 @@ exports.modifyBook = (req, res, next) => {
       if (book.userId != req.auth.userId) {
         res.status(401).json({ message: "Non-autorisé" });
       } else {
+        if (bookObject.imageUrl) {
+          const fileNameThumb = book.imageUrl.split("/images/")[1];
+          const fileNameLarge = fileNameThumb.split("_thumbnail")[0];
+          fs.unlink(`images/${fileNameLarge}.jpg`, () => {});
+          fs.unlink(`images/${fileNameLarge}.png`, () => {});
+          fs.unlink(`images/${fileNameThumb}`, () => {});
+        }
         Book.updateOne(
           { _id: req.params.id },
           { ...bookObject, _id: req.params.id }
