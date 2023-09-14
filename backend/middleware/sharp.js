@@ -6,7 +6,7 @@ const imageResize = (req, res, next) => {
     next();
   } else {
     sharp(req.file.path)
-      .resize(200, 260, "contain")
+      .resize(200, 260, { fit: "contain" })
       .webp({ quality: 90 })
       .toFile(
         req.file.path.replace(/\.jpeg|\.jpg|\.png/g, "_") + "thumbnail.webp"
