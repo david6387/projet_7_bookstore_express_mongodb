@@ -5,13 +5,7 @@ exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
   delete bookObject._id;
   delete bookObject._userId;
-  console.log(`${req.protocol}://${req.get(
-    "host"
-  )}/images/${req.file.filename.replace(
-    /\.jpeg|\.jpg|\.png/g,
-    "_"
-  )}thumbnail.webp
-  `);
+
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
@@ -60,8 +54,10 @@ exports.ratingBook = (req, res, next) => {
 
         book
           .save()
-          .then(() =>
-            res.status(200).json({ message: "Livre noté avec succès", book })
+          .then((savedBook) =>
+            res
+              .status(200)
+              .json({ message: "Livre noté avec succès", book: savedBook })
           )
           .catch((error) => res.status(401).json({ error }));
       }
