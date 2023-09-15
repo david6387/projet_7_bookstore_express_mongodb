@@ -40,7 +40,7 @@ app.use(
       "default-src": ["'self'"],
       "script-src": ["'self'"],
       "style-src": ["'self'"],
-      "img-src": ["*"], // Autorise les images de toutes les sources
+      "img-src": ["*"],
       "font-src": ["'self'"],
     },
   })

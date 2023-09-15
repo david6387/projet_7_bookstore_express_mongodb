@@ -54,10 +54,12 @@ exports.ratingBook = (req, res, next) => {
 
         book
           .save()
-          .then(() =>
-            res.status(200).json({ message: "Livre noté avec succès", book })
-          )
-          .catch((error) => res.status(401).json({ error }));
+          .then((savedBook) => {
+            res.status(201).json(savedBook);
+          })
+          .catch((error) => {
+            res.status(500).json({ error });
+          });
       }
     })
     .catch((error) => res.status(404).json({ error }));
